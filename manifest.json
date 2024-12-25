@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "chatgpt archiver",
+  "version": "1.0",
+  "description": "automatically archives chatgpt conversations",
+  "permissions": ["activeTab", "downloads", "storage", "scripting"],
+  "host_permissions": ["https://chatgpt.com/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
