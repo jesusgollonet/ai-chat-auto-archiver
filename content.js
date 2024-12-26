@@ -1,15 +1,3 @@
-console.log("Content script is alive!");
-
-// Add a visible element to the page so we can really see it working
-const div = document.createElement("div");
-div.textContent = "ChatGPT Archiver is active";
-div.style.position = "fixed";
-div.style.top = "10px";
-div.style.right = "10px";
-div.style.background = "yellow";
-div.style.padding = "5px";
-document.body.appendChild(div);
-
 function extractChatContent() {
   try {
     const messages = document.querySelectorAll(
@@ -35,11 +23,9 @@ function extractChatContent() {
     });
 
     console.log("Extracted content length:", chatContent.length);
-    div.textContent = `Found ${chatContent.length} characters of chat content`;
     return chatContent || "No chat content found";
   } catch (error) {
     console.error("Error extracting chat:", error);
-    div.textContent = "Error: " + error.message;
     return null;
   }
 }
