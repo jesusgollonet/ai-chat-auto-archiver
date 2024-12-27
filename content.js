@@ -32,17 +32,25 @@ function extractChatContent() {
 
 function getCurrentChatTitle() {
   try {
-    const titleElement = document.querySelector(
-      '[data-testid="history-item-0"] div[title]',
+    // First try: look for the active nav item (background color indicates current chat)
+    const activeChat = document.querySelector(
+      '[class*="bg-[var(--sidebar-surface-tertiary)]"] div[title]',
     );
-    if (titleElement) {
-      return titleElement.getAttribute("title");
+    if (activeChat) {
+      return activeChat.getAttribute("title");
     }
 
-    const fallbackElement = document.querySelector('div[dir="auto"][title]');
-    return fallbackElement
-      ? fallbackElement.getAttribute("title")
-      : `chat_${new Date().toISOString()}`;
+    // Second try: check the URL and match it with the corresponding chat
+    const currentPath = window.location.pathname;
+    const chatElement = document.querySelector(
+      `a[href="${currentPath}"] div[title]`,
+    );
+    if (chatElement) {
+      return chatElement.getAttribute("title");
+    }
+
+    // Fallback with timestamp
+    return `chat_${new Date().toISOString()}`;
   } catch (error) {
     console.error("Error getting title:", error);
     return `chat_${new Date().toISOString()}`;
