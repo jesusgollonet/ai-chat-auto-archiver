@@ -2,15 +2,26 @@ function updateStatus(message) {
   document.getElementById("status").textContent = message;
 }
 
-async function executeWithRetry(tabId, action) {
+async function downloadChat(content, title) {
   try {
-    // First attempt to send message
-    const response = await chrome.tabs.sendMessage(tabId, { action: action });
-    return response;
+    console.log("Starting download...");
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const filename = `${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+
+    console.log("Attempting to download:", filename);
+
+    const downloadId = await chrome.downloads.download({
+      url: URL.createObjectURL(blob),
+      filename: filename,
+      saveAs: false,
+    });
+
+    console.log("Download started with ID:", downloadId);
+    return downloadId;
   } catch (error) {
-    // If first attempt fails, wait a moment and try again
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return await chrome.tabs.sendMessage(tabId, { action: action });
+    console.error("Download error:", error);
+    throw error;
   }
 }
 
@@ -28,9 +39,19 @@ document
         return;
       }
 
+      const response = await chrome.tabs.sendMessage(tab.id, {
+        action: "archiveCurrent",
+      });
+
       updateStatus("Archiving current chat...");
-      await executeWithRetry(tab.id, "archiveCurrent");
-      updateStatus("Current chat archived successfully!");
+      if (response.success) {
+        await downloadChat(response.content, response.title);
+        updateStatus("Chat archived successfully!");
+      } else {
+        updateStatus("Error: " + (response.error || "Unknown error"));
+      }
+      await downloadChat(response.content, response.title);
+      updateStatus("Chat archived successfully!");
     } catch (error) {
       updateStatus("Error: " + error.message);
       console.error("Error:", error);

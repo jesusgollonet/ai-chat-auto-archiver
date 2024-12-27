@@ -30,10 +30,44 @@ function extractChatContent() {
   }
 }
 
+function getCurrentChatTitle() {
+  try {
+    const titleElement = document.querySelector(
+      '[data-testid="history-item-0"] div[title]',
+    );
+    if (titleElement) {
+      return titleElement.getAttribute("title");
+    }
+
+    const fallbackElement = document.querySelector('div[dir="auto"][title]');
+    return fallbackElement
+      ? fallbackElement.getAttribute("title")
+      : `chat_${new Date().toISOString()}`;
+  } catch (error) {
+    console.error("Error getting title:", error);
+    return `chat_${new Date().toISOString()}`;
+  }
+}
+
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.action === "archiveCurrent") {
     const content = extractChatContent();
-    console.log("Extracted content sample:", content.substring(0, 100) + "...");
+    const title = getCurrentChatTitle();
+    if (content) {
+      console.log("Sending content back to popup for download");
+      sendResponse({
+        success: true,
+        content: content,
+        title: title,
+      });
+    } else {
+      sendResponse({ success: false, error: "No content extracted" });
+    }
+    console.log(
+      "Extracted content sample:",
+      title,
+      content.substring(0, 100) + "...",
+    );
     sendResponse({ success: true, content: content });
   }
   return true;
