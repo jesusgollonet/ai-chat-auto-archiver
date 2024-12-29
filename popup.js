@@ -50,7 +50,6 @@ document
       } else {
         updateStatus("Error: " + (response.error || "Unknown error"));
       }
-      await downloadChat(response.content, response.title);
       updateStatus("Chat archived successfully!");
     } catch (error) {
       updateStatus("Error: " + error.message);
@@ -58,7 +57,6 @@ document
     }
   });
 
-// Similar changes for the Archive All button
 document.getElementById("archiveAllBtn").addEventListener("click", async () => {
   try {
     const [tab] = await chrome.tabs.query({
