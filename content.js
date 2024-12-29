@@ -61,12 +61,14 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   if (request.action === "archiveCurrent") {
     const content = extractChatContent();
     const title = getCurrentChatTitle();
+    const id = window.location.pathname.split("/")[2];
     if (content) {
       console.log("Sending content back to popup for download");
       sendResponse({
         success: true,
-        content: content,
-        title: title,
+        content,
+        title,
+        id,
       });
     } else {
       sendResponse({ success: false, error: "No content extracted" });

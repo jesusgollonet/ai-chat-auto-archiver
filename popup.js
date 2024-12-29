@@ -2,12 +2,12 @@ function updateStatus(message) {
   document.getElementById("status").textContent = message;
 }
 
-async function downloadChat(content, title) {
+async function downloadChat(id, title, content) {
   try {
     console.log("Starting download...");
 
     const blob = new Blob([content], { type: "text/plain" });
-    const filename = `${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
+    const filename = `${id}_${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.txt`;
 
     console.log("Attempting to download:", filename);
 
@@ -45,7 +45,7 @@ document
 
       updateStatus("Archiving current chat...");
       if (response.success) {
-        await downloadChat(response.content, response.title);
+        await downloadChat(response.id, response.title, response.content);
         updateStatus("Chat archived successfully!");
       } else {
         updateStatus("Error: " + (response.error || "Unknown error"));
