@@ -1,24 +1,21 @@
 function extractChatContent() {
   try {
-    const messages = document.querySelectorAll(
-      "[data-message-author-role], .markdown",
+    const turns = document.querySelectorAll(
+      '[data-testid^="conversation-turn-"]',
     );
     let chatContent = "";
 
-    messages.forEach((message) => {
-      const role =
-        message.getAttribute("data-message-author-role") ||
-        message
-          .closest("[data-message-author-role]")
-          ?.getAttribute("data-message-author-role") ||
-        "unknown";
-      const content = message.classList.contains("markdown")
-        ? message
-        : message.querySelector(".markdown");
-      const text = content ? content.textContent.trim() : "";
-
-      if (text) {
-        chatContent += `${role}: ${text}\n\n`;
+    turns.forEach((turn) => {
+      const roleText =
+        turn
+          .querySelector("[data-message-author-role]")
+          ?.getAttribute("data-message-author-role") || "unknown";
+      const textContainer = turn.querySelector("[data-message-author-role]");
+      if (textContainer) {
+        const text = textContainer.innerText.trim();
+        if (text) {
+          chatContent += `${roleText}: ${text}\n\n`;
+        }
       }
     });
 
