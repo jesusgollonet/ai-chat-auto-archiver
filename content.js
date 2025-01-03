@@ -1,4 +1,6 @@
 function extractChatContent() {
+  console.log("hi");
+  console.log("hoieos");
   try {
     const turns = document.querySelectorAll(
       '[data-testid^="conversation-turn-"]',
